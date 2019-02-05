@@ -1,4 +1,0 @@
-{
-  "tests/test_pipeline_config.py::TestPipelineConfig::test_get_current_config_without_models": true,
-  "tests/test_pipeline_config.py::TestPipelineConfig::test_get_user_config": true
-}
