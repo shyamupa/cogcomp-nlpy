@@ -1,4 +1,6 @@
+from ccg_nlpy import local_pipeline
 from ccg_nlpy.server.example.example_annotator import ExampleAnnotator
+from ccg_nlpy.server.example.example_model import ExampleModel
 from flask import Flask
 from flask_cors import CORS
 
@@ -9,7 +11,9 @@ CORS(app)
 
 def main():
     # create your model object here, see the DummyModel class for a minimal example.
-    annotator = ExampleAnnotator(model=mymodel, provided_view="DUMMYVIEW", required_views=["TOKENS"])
+    mymodel = ExampleModel()
+    pipeline = local_pipeline.LocalPipeline()
+    annotator = ExampleAnnotator(model=mymodel, pipeline=pipeline, provided_view="DUMMYVIEW", required_views=["TOKENS"])
 
     # Expose wrapper.annotate method through a Flask server
     app.add_url_rule(rule='/annotate', endpoint='annotate', view_func=annotator.annotate, methods=['GET'])

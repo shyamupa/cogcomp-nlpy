@@ -13,8 +13,8 @@ class ExampleAnnotator(Annotator):
     A dummy model that is used with the model wrapper server You need to define two methods load_params and
     inference_on_ta when writing your own model, for it to be compatible with the model wrapper server.
     """
-    def __init__(self, model, provided_view: str, required_views: List[str]):
-        super().__init__(provided_view, required_views)
+    def __init__(self, model, pipeline: PipelineBase, provided_view: str, required_views: List[str]):
+        super().__init__(pipeline=pipeline, provided_view=provided_view, required_views=required_views)
         self.model = model
 
     # def load_params(self):
@@ -27,9 +27,6 @@ class ExampleAnnotator(Annotator):
         new_view.view_name = self.provided_view
         docta.view_dictionary[self.provided_view] = new_view
         return docta
-
-    def get_pipeline_instance(self) -> PipelineBase:
-        return local_pipeline.LocalPipeline()
 
     def get_text_annotation_for_model(self, text: str, required_views: List[str]):
         # TODO This is a problem with ccg_nlpy text annotation, it does not like newlines (e.g., marking paragraphs)

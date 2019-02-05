@@ -7,7 +7,7 @@ import logging
 
 
 class Annotator:
-    def __init__(self, provided_view:str, required_views:List[str]):
+    def __init__(self, pipeline: PipelineBase, provided_view:str, required_views:List[str]):
         # the viewname provided by the model
         self.provided_view = provided_view
         # the views required by the model (e.g. NER_CONLL for Wikifier)
@@ -16,17 +16,10 @@ class Annotator:
         # this could have been done outside. Cannot say which is a better choice.
         # self.load_params()
         # We need a pipeline to create views that are required by our model (e.g. NER is needed for WIKIFIER etc.)
-        self.pipeline = self.get_pipeline_instance()
+        self.pipeline = pipeline
         logging.info("required views: %s", self.get_required_views())
         logging.info("provides view: %s", self.get_view_name())
         logging.info("ready!")
-
-    # def load_params(self) -> None:
-    #     """
-    #     Load the relevant model parameters.
-    #     :return: None
-    #     """
-    #     raise NotImplementedError
 
     def get_required_views(self) -> List[str]:
         """
@@ -78,13 +71,6 @@ class Annotator:
         ta_json = json.dumps(docta.as_json)
 
         return ta_json
-
-    def get_pipeline_instance(self) -> PipelineBase:
-        """
-        Creates a pipeline instance (either local or remote pipeline) to get the views required by the model.
-        :return: PipelineBase object (LocalPipeline or RemotePipeline)
-        """
-        raise NotImplementedError
 
     def get_text_annotation_for_model(self, text: str, required_views: List[str]) -> TextAnnotation:
         """
