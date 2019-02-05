@@ -2,23 +2,27 @@ from typing import List
 from ccg_nlpy.pipeline_base import PipelineBase
 from ccg_nlpy.core.text_annotation import TextAnnotation
 import json
+
+from ccg_nlpy.server.annotator import Annotator
 from flask import request
 import logging
 
 
-class Annotator:
-    def __init__(self, provided_view:str, required_views:List[str]):
-        # the viewname provided by the model
-        self.provided_view = provided_view
-        # the views required by the model (e.g. NER_CONLL for Wikifier)
-        self.required_views = required_views
-        # right now, we call the model load inside the init of server
-        # this could have been done outside. Cannot say which is a better choice.
-        # self.load_params()
-        # We need a pipeline to create views that are required by our model (e.g. NER is needed for WIKIFIER etc.)
-        self.pipeline = self.get_pipeline_instance()
-        logging.info("required views: %s", self.get_required_views())
-        logging.info("provides view: %s", self.get_view_name())
+class MultiAnnotator:
+    def __init__(self, annotators: List[Annotator]):
+        self.annotators = annotators
+        # all models should have the same set of required views
+        self.required_views = annotators[0].get_required_views()
+        self.provided_views = [m.get_view_name() for m in annotators]
+        print("provided views", self.provided_views)
+
+        # for each viewname (e.g. POS_Arabic) know which model to call (Arabic_POS_Tagger)
+        self.view2annotator_dict = {}
+        for m in self.annotators:
+            self.view2annotator_dict[m.get_view_name()] = m
+
+        logging.info("required views: %s", self.required_views)
+        logging.info("provided views: %s", self.provided_views)
         logging.info("ready!")
 
     # def load_params(self) -> None:
@@ -35,12 +39,12 @@ class Annotator:
         """
         return self.required_views
 
-    def get_view_name(self) -> str:
+    def get_view_names(self) -> List[str]:
         """
-        The viewname provided by model (e.g. NER_CONLL)
-        :return: viewname
+        The list of viewnames provided by model (e.g. [NER_CONLL, NER_Ontonotes] or [POS_English, POS_French, POS_ ...])
+        :return: list of viewnames
         """
-        return self.provided_view
+        return self.provided_views
 
     def add_view(self, docta: TextAnnotation) -> TextAnnotation:
         """
@@ -49,11 +53,7 @@ class Annotator:
         """
         raise NotImplementedError
 
-    def annotate(self) -> str:
-        """
-        The method exposed through the flask interface.
-        :return: json of a text annotation
-        """
+    def annotate(self):
         # we get something like "?text=<text>&views=<views>". Below two lines extract these.
         text = request.args.get('text')
         views = request.args.get('views')
@@ -62,22 +62,22 @@ class Annotator:
             return "The parameters 'text' and/or 'views' are not specified. Here is a sample input: ?text=\"This is a " \
                    "sample sentence. I'm happy.\"&views=POS,NER "
         views = views.split(",")
-        if self.provided_view not in views:
-            logging.info("desired view not provided by this server.")
-            # After discussing with Daniel, this is the proper discipline to handle views not provided by this.
-            # The appelles server will fallback to the next remote server.
-            return "VIEW NOT PROVIDED"
 
-        # create a text ann with the required views for the model
-        docta = self.get_text_annotation_for_model(text=text, required_views=self.get_required_views())
+        for view in views:
+            if view in self.provided_views:
 
-        # send it to your model for inference
-        docta = self.add_view(docta=docta)
-
-        # make the returned text ann to a json
-        ta_json = json.dumps(docta.as_json)
-
-        return ta_json
+                # select the correct model
+                relevant_annotator = self.view2annotator_dict[view]
+                # create a text ann with the required views for the model
+                docta = self.get_text_annotation_for_model(text=text, required_views=self.required_views)
+                # send it to your model for inference
+                docta = relevant_annotator.add_view(docta=docta)
+                # make the returned text ann to a json
+                ta_json = json.dumps(docta.as_json)
+                # print("returning", ta_json)
+                return ta_json
+        # If we reached here, it means the requested view cannot be provided by this annotator
+        return "VIEW NOT PROVIDED"
 
     def get_pipeline_instance(self) -> PipelineBase:
         """
