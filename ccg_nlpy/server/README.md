@@ -76,6 +76,8 @@ http://localhost/annotate?text="Shyam is a person and Apple is an organization"&
 
 For serving multiple models using a single server, as in the case of multilingual models, there is a utility class `multi_annotator.py` that wraps around several annotator instances. 
 For instance, you can serve NER_English, NER_Spanish, etc. all through a single server using the `MultiAnnotator` class in `multi_annotator.py`. 
+Make sure that the annotators that are served using a single `MultiAnnotator` all have the same required view. 
+
 You can use it to write your `server.py` that provides multiple views as follows,
 
 ```python
@@ -88,6 +90,6 @@ You can use it to write your `server.py` that provides multiple views as follows
 
     multi_annotator = MultiAnnotator(annotators=annotators)
     app.add_url_rule(rule='/annotate', endpoint='annotate', view_func=multi_annotator.annotate, methods=['GET'])
-    app.run(host='0.0.0.0', port=8009)
+    app.run(host='localhost', port=5000)
     
 ```
