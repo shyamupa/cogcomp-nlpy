@@ -65,4 +65,4 @@ app.run(host='localhost', port=5000)
 This will host the server on [localhost](http://127.0.0.1:5000/) and you can get your text annotation in json format by 
 sending requests to the server like so,
 
-[localhost/annotate?text=Shyam is a person and Apple is an organization&views=DUMMYVIEW](localhost/annotate?text=Shyam is a person and Apple is an organization&views=DUMMYVIEW)
+(localhost/annotate?text=Shyam is a person and Apple is an organization&views=DUMMYVIEW)[localhost/annotate?text=Shyam is a person and Apple is an organization&views=DUMMYVIEW]
