@@ -9,6 +9,18 @@ import logging
 
 
 class MultiAnnotator:
+    """
+        Wraps around several Annotator instances for serving multiple models simultaneously from a single endpoint.
+        The intended use case is for serving multilingual models (e.g., NER for English, Spanish, Chinese ...)
+
+        All the annotators should have the same set of required views.
+
+        The annotate method implemented below is exposed through the flask server.
+        It identifies the relevant annotator to call.
+        For instance, if the NER_zh view is requested, it will call the annotator that provides it.
+
+        You should subclass this class and implement add_view method.
+        """
     def __init__(self, annotators: List[Annotator]):
         self.annotators = annotators
         # all models should have the same set of required views

@@ -7,7 +7,15 @@ import logging
 
 
 class Annotator:
-    def __init__(self, pipeline: PipelineBase, provided_view:str, required_views:List[str]):
+    """
+    Wraps around your python model, and calls it to get new views that are provided by it.
+    The annotate method implemented below is exposed through the flask server.
+
+    You should subclass this class and implement add_view and get_text_annotation_for_model methods.
+    If you are serving a multilingual model, please see multi_annotator.py also.
+    """
+
+    def __init__(self, pipeline: PipelineBase, provided_view: str, required_views: List[str]):
         # the viewname provided by the model
         self.provided_view = provided_view
         # the views required by the model (e.g. NER_CONLL for Wikifier)
