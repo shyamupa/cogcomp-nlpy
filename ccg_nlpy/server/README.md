@@ -1,9 +1,9 @@
 This folder contains the neccessary code for serving your python model through a visualization tool like [apelles](https://github.com/CogComp/apelles) which can consume text annotation jsons.
 
 To make a demo using your fancy pytorch / tensorflow / dynet model, you need to 
-- Write your annotator, 
-- Write a method to create new views in your model, and 
-- Write the server.
+- [Write your annotator](#create-your-annotator), 
+- [Write a method to create new views in your model](#add-method-to-create-view-in-your-model), and 
+- [Write the server](#write-the-server).
 
 If you are trying to serve a multilingual model, you should also look at `multi_annotator.py`.
 
