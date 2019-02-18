@@ -19,9 +19,13 @@ class MultiAnnotator:
         It identifies the relevant annotator to call.
         For instance, if the NER_zh view is requested, it will call the annotator that provides it.
 
-        You should subclass this class and implement add_view method.
-        """
+        You should subclass this class and implement the add_view method.
+    """
     def __init__(self, annotators: List[Annotator]):
+        """
+        Takes a list of annotator instances that provide views for different languages
+        :param annotators: list of annotator instances
+        """
         self.annotators = annotators
         # all models should have the same set of required views
         self.required_views = annotators[0].get_required_views()

@@ -16,6 +16,15 @@ class Annotator:
     """
 
     def __init__(self, pipeline: PipelineBase, provided_view: str, required_views: List[str]):
+        """
+        The required arguments are
+        (a) a pipeline instance (either local or remote) that will be used to create text annotations that will be sent to the model.
+        (b) the name of the view provided by the model
+        (c) the list of view names required by the model (e.g., NER for Wikifier).
+        :param pipeline: pipeline instance (local or remote)
+        :param provided_view: view name provided
+        :param required_views: list of view names required
+        """
         # the viewname provided by the model
         self.provided_view = provided_view
         # the views required by the model (e.g. NER_CONLL for Wikifier)
