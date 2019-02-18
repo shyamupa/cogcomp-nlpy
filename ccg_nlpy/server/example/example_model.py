@@ -10,6 +10,12 @@ class ExampleModel:
         pass
 
     def get_view_from_model(self, docta:TextAnnotation) -> View:
+        """
+        This method is where your model will create the new view that will get added to the text annotation.
+        The input docta text annotation should already contain all the views that are needed by your model.
+        :param docta:
+        :return:
+        """
         # This upcases each token. Test for TokenLabelView
         new_view = copy.deepcopy(docta.get_view("TOKENS"))
         tokens = docta.get_tokens
@@ -20,5 +26,4 @@ class ExampleModel:
         # new_view = copy.deepcopy(docta.get_view("NER_CONLL"))
         # for nercons in new_view.cons_list:
         #     nercons["label"] = nercons["tokens"].upper()
-
         return new_view

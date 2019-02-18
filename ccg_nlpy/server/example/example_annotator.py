@@ -22,8 +22,9 @@ class ExampleAnnotator(Annotator):
     #     raise NotImplementedError
 
     def add_view(self, docta):
+        # ask the model to create the new view
         new_view = self.model.get_view_from_text_annotation(docta)
-
+        # add it to the text annotation
         new_view.view_name = self.provided_view
         docta.view_dictionary[self.provided_view] = new_view
         return docta
