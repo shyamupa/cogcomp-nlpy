@@ -1,6 +1,6 @@
 This folder contains the neccessary code for serving your python model through a visualization tool like apelles which can consume text annotations.
 
-To make a demo using your fancy pytorch / tensorflow / dynet model, you need to
+To make a demo using your fancy pytorch / tensorflow / dynet model, you need to write your annotator, write a method to create new views in your model, and write the server.
 
 ## Create Your Annotator 
 Create a Annotator by subclassing the Annotator class in `annotator.py`. 
@@ -31,7 +31,9 @@ You also need to implement a `get_text_annotation_for_model` method that creates
         return ta
 ```
 
-2. Write a method similar to get_view_from_model in `example/example_model.py`. This method name could be anything, you are responsible for calling this in the `add_view` method above.
+## Add Method to Create View in your Model
+
+Write a method similar to get_view_from_model in `example/example_model.py`. This method name could be anything, you are responsible for calling this in the `add_view` method above.
 
 ```python
     def get_view_from_model(self, docta:TextAnnotation) -> View:
@@ -63,4 +65,4 @@ app.run(host='localhost', port=5000)
 This will host the server on [localhost](http://127.0.0.1:5000/) and you can get your text annotation in json format by 
 sending requests to the server like so,
 
-[localhost/annotate?text=Shyam is a person and Apple is an organization&views=DUMMYVIEW]()
+[localhost/annotate?text=Shyam is a person and Apple is an organization&views=DUMMYVIEW](localhost/annotate?text=Shyam is a person and Apple is an organization&views=DUMMYVIEW)
