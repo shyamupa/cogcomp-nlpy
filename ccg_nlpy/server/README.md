@@ -5,7 +5,7 @@ To make a demo using your fancy pytorch / tensorflow / dynet model, you need to
 - [Write a method to create new views in your model](#add-method-to-create-view-in-your-model), and 
 - [Write the server](#write-the-server).
 
-If you are trying to serve a multilingual model, you should also look at `multi_annotator.py`.
+If you are trying to serve a multilingual model, you should also look at [serving multiple models](#serving-multiple-models).
 
 ## Create Your Annotator 
 Create a Annotator by subclassing the Annotator class in `annotator.py`. 
@@ -70,4 +70,24 @@ Running server.py will host the server on [localhost](http://127.0.0.1:5000/) an
 sending requests to the server like so,
 ```
 http://localhost/annotate?text="Shyam is a person and Apple is an organization"&views=DUMMYVIEW
+```
+
+## Serving Multiple Models
+
+For serving multiple models using a single server, as in the case of multilingual models, there is a utility class `multi_annotator.py` that wraps around several annotator instances. 
+For instance, you can serve NER_English, NER_Spanish, etc. all through a single server using the `MultiAnnotator` class in `multi_annotator.py`. 
+You can use it to write your `server.py` that provides multiple views as follows,
+
+```python
+    annotators: List[Annotator] = []
+    langs = ["es", "zh", "fr", "it", "de"]
+    model_paths = [...]
+    for lang, model_path in zip(langs, model_paths):
+        annotator = ... # Create your language specific annotators here
+        annotators.append(annotator)
+
+    multi_annotator = MultiAnnotator(annotators=annotators)
+    app.add_url_rule(rule='/annotate', endpoint='annotate', view_func=multi_annotator.annotate, methods=['GET'])
+    app.run(host='0.0.0.0', port=8009)
+    
 ```

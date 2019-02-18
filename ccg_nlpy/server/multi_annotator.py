@@ -19,7 +19,6 @@ class MultiAnnotator:
         It identifies the relevant annotator to call.
         For instance, if the NER_zh view is requested, it will call the annotator that provides it.
 
-        You should subclass this class and implement the add_view method.
     """
     def __init__(self, annotators: List[Annotator]):
         """
@@ -54,13 +53,6 @@ class MultiAnnotator:
         :return: list of viewnames
         """
         return self.provided_views
-
-    def add_view(self, docta: TextAnnotation) -> TextAnnotation:
-        """
-        Takes a text annotation and adds the view provided by this model to it.
-        :return: TextAnnotation
-        """
-        raise NotImplementedError
 
     def annotate(self):
         # we get something like "?text=<text>&views=<views>". Below two lines extract these.
